@@ -14,3 +14,4 @@ dependencies:
     - keras==2.0.9
     - tellopy
     - image
+    - pygame

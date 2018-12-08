@@ -1,3 +1,9 @@
+## Prerequisites
+
+```bash
+brew install sdl
+```
+
 ## Installing environment
 
 ```bash
