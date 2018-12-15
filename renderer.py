@@ -4,17 +4,17 @@ class Renderer(object):
     def __init__(self):
         pass
 
-    def render(self, image, drone_state, faces):
-        self.render_faces(image, faces)
+    def render(self, image, drone_state, face):
+        self.render_faces(image, face)
 
         stats = []
         stats.append(self.get_battery(drone_state))
         stats.append(self.get_wifi(drone_state))
         self.render_stats(image, stats)
 
-    def render_faces(self, image, faces):
-        for (x,y,w,h) in faces:
-            cv2.rectangle(image, (x,y), (x+w, y+h), (255,0,0), 2)
+    def render_faces(self, image, face):
+        if face is not None:
+            cv2.rectangle(image, (face.x,face.y), (face.x+face.w, face.y+face.h), (255,0,0), 2)
 
     def get_battery(self, drone_state):
         if drone_state.battery is None:

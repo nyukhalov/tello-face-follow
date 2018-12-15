@@ -45,11 +45,11 @@ def main():
         drone.subscribe(drone.EVENT_FLIGHT_DATA, flight_data_handler)
 
         container = av.open(drone.get_video_stream())
-        frame_skip = 300
+        num_skip_frames = 300
         while True:
             for frame in container.decode(video=0):
-                if frame_skip > 0:
-                    frame_skip = frame_skip - 1
+                if num_skip_frames > 0:
+                    num_skip_frames = num_skip_frames - 1
                     continue
                 start_time = time.time()
 
@@ -59,13 +59,11 @@ def main():
 
                 cv2.imshow('Original', image)
                 cv2.waitKey(1)
-                if frame.time_base < 1.0/60:
-                    time_base = 1.0/60
-                else:
-                    time_base = frame.time_base
+
+                time_base = max(1.0/60, frame.time_base)
                 processing_time = time.time() - start_time
-                frame_skip = int(processing_time/time_base)
-                print('Processing time=%f, skip frames=%d' % (processing_time, frame_skip))
+                num_skip_frames = int(processing_time/time_base)
+                print('Processing time=%f, skip frames=%d' % (processing_time, num_skip_frames))
 
     except Exception as ex:
         exc_type, exc_value, exc_traceback = sys.exc_info()
