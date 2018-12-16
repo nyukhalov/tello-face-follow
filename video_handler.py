@@ -7,7 +7,7 @@ import traceback
 import time
 from face_detector import FaceDetector
 from renderer import Renderer
-from display import Cv2Display2D
+from display import Cv2Display2D, PygameDisplay
 
 class DroneState(object):
     def __init__(self):
@@ -18,9 +18,13 @@ class DroneState(object):
 drone_state = DroneState()
 
 def main():
+    W = 432
+    H = 240
+
     face_detector = FaceDetector()
     renderer = Renderer()
-    display = Cv2Display2D()
+    #display = Cv2Display2D()
+    display = PygameDisplay(W, H)
 
     try:
         container = av.open('video/ball_tracking_example.mp4')
@@ -33,8 +37,7 @@ def main():
                 start_time = time.monotonic()
 
                 image = np.array(frame.to_image())
-                image = cv2.resize(image, (432, 240))
-                image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                image = cv2.resize(image, (W,H))
 
                 face = None
                 face = face_detector.detect(image)
