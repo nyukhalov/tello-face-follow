@@ -15,6 +15,7 @@ class Renderer(object):
     def render_faces(self, image, face):
         if face is not None:
             cv2.rectangle(image, (face.x,face.y), (face.x+face.w, face.y+face.h), (255,0,0), 2)
+            cv2.circle(image, (face.cx, face.cy), 2, (0,255,0))
 
     def get_battery(self, drone_state):
         if drone_state.battery is None:

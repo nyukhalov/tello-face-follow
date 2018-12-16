@@ -7,6 +7,7 @@ import traceback
 import time
 from face_detector import FaceDetector
 from renderer import Renderer
+from display import Cv2Display2D
 
 class DroneState(object):
     def __init__(self):
@@ -19,6 +20,7 @@ drone_state = DroneState()
 def main():
     face_detector = FaceDetector()
     renderer = Renderer()
+    display = Cv2Display2D()
 
     try:
         container = av.open('video/ball_tracking_example.mp4')
@@ -28,11 +30,13 @@ def main():
                 if num_skip_frames > 0:
                     num_skip_frames = num_skip_frames - 1
                     continue
-                start_time = time.time()
+                start_time = time.monotonic()
 
                 image = np.array(frame.to_image())
                 image = cv2.resize(image, (432, 240))
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+                face = None
                 face = face_detector.detect(image)
                 renderer.render(image, drone_state, face)
 
@@ -43,14 +47,13 @@ def main():
                     offset_y = face.cy - image_cy
                     print(offset_x, offset_y)
 
-                cv2.imshow('Original', image)
-                cv2.waitKey(1)
+                display.paint(image)
 
                 time_base = max(1/60, frame.time_base)
-                processing_time = time.time() - start_time
+                processing_time = time.monotonic() - start_time
                 num_skip_frames = int(processing_time/time_base)
                 print('Video steam %d FPS, frame time base=%f' % (1/frame.time_base, frame.time_base))
-                print('Processing FPS=%d, time=%f, skip frames=%d' % (1/processing_time, processing_time, num_skip_frames))
+                print('Processing FPS=%d, time=%f ms, skip frames=%d' % (1/processing_time, 1000 * processing_time, num_skip_frames))
 
     except Exception as ex:
         exc_type, exc_value, exc_traceback = sys.exc_info()
