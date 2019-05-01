@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import tellopy
 import cv2
 import av
@@ -8,18 +9,15 @@ import time
 from face_detector import FaceDetector
 from renderer import Renderer
 from display import Cv2Display2D, PygameDisplay
-
-class DroneState(object):
-    def __init__(self):
-        self.battery = None # battery percentage 0..1
-        self.speed = None # drone's speed
-        self.wifi = None # wifi connection level 0..1
+from model import DroneState
 
 drone_state = DroneState()
 
 def main():
     W = 432
     H = 240
+    image_cx = W // 2
+    image_cy = H // 2    
 
     face_detector = FaceDetector()
     renderer = Renderer()
@@ -28,7 +26,7 @@ def main():
 
     try:
         container = av.open('video/ball_tracking_example.mp4')
-        num_skip_frames = 300
+        num_skip_frames = 0
         while True:
             for frame in container.decode(video=0):
                 if num_skip_frames > 0:
@@ -39,13 +37,10 @@ def main():
                 image = np.array(frame.to_image())
                 image = cv2.resize(image, (W,H))
 
-                face = None
                 face = face_detector.detect(image)
                 renderer.render(image, drone_state, face)
 
                 if face is not None:
-                    image_cx = image.shape[1] // 2
-                    image_cy = image.shape[0] // 2
                     offset_x = face.cx - image_cx
                     offset_y = face.cy - image_cy
                     print(offset_x, offset_y)
@@ -64,7 +59,7 @@ def main():
         print(ex)
 
     finally:
-        cv2.destroyAllWindows()
+        display.dispose()
 
 if __name__ == '__main__':
     main()

@@ -10,6 +10,10 @@ class Display2D(object):
     def paint(self, img):
         pass
 
+    # abstract
+    def dispose(self):
+        pass
+
 class Cv2Display2D(Display2D):
     def __init__(self, win_title='Main'):
         self.win_title = win_title
@@ -18,6 +22,9 @@ class Cv2Display2D(Display2D):
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.imshow(self.win_title, img)
         cv2.waitKey(1)
+
+    def dispose(self):
+        cv2.destroyAllWindows()
 
 class PygameDisplay(Display2D):
     def __init__(self, W, H):
